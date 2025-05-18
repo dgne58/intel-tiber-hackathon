@@ -77,7 +77,7 @@ const GaugeMeter = ({ percentage, size = 140, strokeWidth = 16 }) => {
 
 export const Screen = () => {
     const [confidenceScore, setConfidenceScore] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     const fetchConfidenceScore = async () => {
         setIsLoading(true);
@@ -126,39 +126,85 @@ export const Screen = () => {
 
     return (
         <main
-            className="bg-white flex flex-row justify-center w-full"
+            className="relative bg-[rgba(24,24,25,1)] overflow-hidden flex flex-row justify-center w-full"
             data-model-id="1:2"
         >
-            <div className="bg-white overflow-hidden w-full max-w-[1425px] h-[2233px]"> {/* Adjusted height or make it dynamic */}
-                <section className="relative h-[2257px]"> {/* Adjusted height or make it dynamic */}
+            {/* Left gradient fade */}
+            <div className="hidden lg:block absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[rgba(27,27,29,1)] to-transparent" />
+            {/* Right gradient fade */}
+            <div className="hidden lg:block absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-[rgba(27,27,29,1)] to-transparent" />
+            <div className="bg-white overflow-hidden w-full max-w-[1425px]"> {/* Adjusted height or make it dynamic */}
+                <section className="relative h-[1257px]"> {/* Adjusted height or make it dynamic */}
                     <div className="absolute w-full h-full top-0 left-0 bg-white overflow-hidden"> {/* Use h-full */}
                         <div className="relative h-full"> {/* Use h-full */}
                             <div className="flex flex-col h-full items-start left-0 [background:linear-gradient(180deg,rgba(27,27,29,1)_0%,rgba(7,7,8,1)_100%)] w-full absolute top-0">
                                 {/* Header/Navigation */}
-                                <header className="relative w-full h-[73px] border-b [border-bottom-style:solid] border-[#ffffff0f]">
-                                    <nav className="flex w-[950px] h-8 items-start gap-[302.16px] pl-2 pr-[64.5px] py-0 relative top-5 left-1/2 transform -translate-x-1/2">
+                                <header className="relative w-full h-[73px] border-b border-solid border-[#ffffff0f]">
+                                    <nav
+                                        className="
+      flex w-[950px] h-8 items-start gap-[302.16px]
+      pl-2 pr-[64.5px] py-0
+      relative top-5 left-1/2 transform -translate-x-1/2
+    "
+                                    >
                                         <div className="relative w-[458.85px] h-8">
-                                            <div className="flex w-[325px] h-8 items-start gap-6 pl-0 pr-[341.09px] py-0 absolute top-0 left-[134px]">
-                                                <div className="relative w-[84.82px] h-8 mr-[-101.06px] rounded-lg">
-                                                    <div className="absolute h-6 top-1 left-1 [font-family:'Helvetica-Regular',Helvetica] font-normal text-slate-300 text-base tracking-[0] leading-6 whitespace-nowrap">
-                                                        Features
-                                                    </div>
-                                                </div>
+                                            {/* 1) Features link stays untouched */}
+                                            <div
+                                                className="
+          flex w-[325px] h-8 items-start gap-6
+          pl-0 pr-[341.09px] py-0
+          absolute top-0 left-[134px]
+        "
+                                            >
                                             </div>
-                                            <img
-                                                className="absolute w-[110px] h-5 top-1.5 left-0"
-                                                alt="Obscura logo"
-                                                src="https://c.animaapp.com/KiVzG1Ou/img/icon.svg"
-                                            />
+
+                                            {/* 2) Crop wrapper for the star – a bit bigger + scale */}
+                                            <div
+                                                className="
+    absolute top-1.5 left-0
+    w-[30px] h-6      /* ↑ wider/taller so nothing is cut off */
+    overflow-hidden
+  "
+                                            >
+                                                <img
+                                                    src="https://c.animaapp.com/KiVzG1Ou/img/icon.svg"
+                                                    alt="Obscura star"
+                                                    className="
+      w-[110px] h-6         /* ↑ match new height */
+      object-none object-left-top 
+      transform scale-110   /* ↑ slight upsizing of the glyph */
+    "
+                                                />
+                                            </div>
+
+                                            {/* 3) Move “obscura” text right to clear the full star */}
+                                            <span
+                                                className="
+    absolute top-1.5 left-[36px]   /* ↑ slide over by ~6px */
+    [font-family:'Helvetica-Regular',Helvetica]
+    font-normal text-white text-base
+    tracking-[0] leading-6 whitespace-nowrap
+  "
+                                            >
+                                                obscura
+                                            </span>
                                         </div>
                                     </nav>
                                 </header>
 
+
                                 <div className="relative w-full flex-grow"> {/* Use flex-grow for main content area */}
                                     <div className="relative w-[1446px] h-full top-[-79px] left-[-13px]"> {/* Use h-full */}
                                         {/* Vertical guide lines */}
-                                        <div className="left-[130px] absolute w-px h-full top-0 [background:linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(31,31,31,1)_10%)]" /> {/* Use h-full */}
-                                        <div className="left-[1320px] absolute w-px h-full top-0 [background:linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(31,31,31,1)_10%)]" /> {/* Use h-full */}
+                                        <div
+                                            className="absolute inset-y-0 left-[130px] w-px
+             [background:linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(31,31,31,1)_10%)]"
+                                        />
+                                        <div
+                                            className="absolute inset-y-0 left-[1320px] w-px
+             [background:linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(31,31,31,1)_10%)]"
+                                        />
+
 
                                         {/* Footer */}
                                         <footer className="absolute w-[1423px] h-[120px] top-[1100px] left-0.5"> {/* Keep footer positioning as is for now */}
@@ -170,42 +216,12 @@ export const Screen = () => {
                                                         <div className="h-[488px] overflow-hidden">
                                                             <div className="relative w-[1188px] h-[488px] left-0.5">
                                                                 <div className="w-[1186px] h-[170px] bg-[url(https://c.animaapp.com/KiVzG1Ou/img/vector-6.svg)] bg-[100%_100%]">
-                                                                    <div className="relative w-[454px] h-[83px] top-[33px] left-[89px]">
-                                                                        <img
-                                                                            className="absolute w-[110px] h-5 top-0 left-0"
-                                                                            alt="Obscura logo"
-                                                                            src="https://c.animaapp.com/KiVzG1Ou/img/icon-1.svg"
-                                                                        />
-                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex w-[983px] h-[23px] items-start gap-[405.03px] pl-0 pr-[46.75px] py-0 absolute top-[57px] left-1/2 transform -translate-x-1/2">
-                                                    <div className="relative w-[422.47px] h-16 mb-[-41.08px] opacity-60">
-                                                        <div className="absolute h-6 top-5 left-0 [font-family:'Helvetica-Regular',Helvetica] font-normal text-white text-base tracking-[0] leading-6 whitespace-nowrap">
-                                                            Copyright © 2025 Obscura. All rights reserved.
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex w-[168px] h-16 items-start pl-0 pr-[987.25px] py-0 relative mb-[-41.08px] mr-[-58.83px]">
-                                                        {socialLinks.map((link, index) => (
-                                                            <div
-                                                                key={index}
-                                                                className="relative w-14 h-16 mr-[-875.25px] border-r [border-right-style:solid] border-l [border-left-style:solid] border-[#1f1f1f]"
-                                                                style={{
-                                                                    borderLeft: index === 0 ? "1px solid #1f1f1f" : "none",
-                                                                    marginRight: index === 0 ? "-875.25px" : index === 1 ? "-931.25px" : "-987.25px",
-                                                                }}
-                                                            >
-                                                                {link.icon ? (
-                                                                    <img className="absolute w-6 h-6 top-5 left-4" alt={link.alt} src={link.icon} />
-                                                                ) : (
-                                                                    <div className="relative w-6 h-6 top-5 left-4" style={{ backgroundImage: `url(${link.bgImage})`, backgroundSize: "100% 100%" }} />
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
                                                 </div>
                                             </div>
                                         </footer>
@@ -287,14 +303,14 @@ export const Screen = () => {
                             {/* Circle base track - Using placeholder for now */}
                             <div className="absolute w-[137px] h-[139px] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#333333]" />
 
-                                    <AnimatedGauge
-          percentage={confidenceScore}
-          // optional overrides:
-          sizeClass="w-40 h-40"
-          trackColorClass="stroke-neutral-700"
-          progressColorClass="stroke-green-400"
-          durationClass="duration-700"
-        />
+                            <AnimatedGauge
+                                percentage={confidenceScore}
+                                // optional overrides:
+                                sizeClass="w-40 h-40"
+                                trackColorClass="stroke-neutral-700"
+                                progressColorClass="stroke-green-400"
+                                durationClass="duration-700"
+                            />
                         </div>
                     </div>
 
@@ -319,8 +335,8 @@ export const Screen = () => {
                             </div>
 
                             <Button
-  variant="outline"
-  className="!bg-transparent border border-white text-white
+                                variant="outline"
+                                className="!bg-transparent border border-white text-white
              inline-flex items-center justify-center gap-2
              pt-[var(--spacing-button-vertical-padding)]
              pr-[var(--spacing-button-horizontal-padding)]
@@ -329,13 +345,13 @@ export const Screen = () => {
              rounded-[var(--spacing-button-corner-radius)]
              hover:bg-white/10 active:bg-white/20
              transition-colors"
-  onClick={fetchConfidenceScore}
->
-  <span className="text-sm font-medium whitespace-nowrap">
-    Analyze
-  </span>
-  <ArrowRightIcon className="relative w-4 h-4" />
-</Button>
+                                onClick={fetchConfidenceScore}
+                            >
+                                <span className="text-sm font-medium whitespace-nowrap">
+                                    Analyze
+                                </span>
+                                <ArrowRightIcon className="relative w-4 h-4" />
+                            </Button>
 
                         </CardContent>
                     </Card>
