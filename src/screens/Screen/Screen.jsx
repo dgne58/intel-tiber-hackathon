@@ -1,126 +1,122 @@
-import React, { useState, useEffect } from "react";
 import { ArrowRightIcon, Upload } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
+import AnimatedGauge from '../../components/ui/AnimatedGauge';
+
+
 
 // Simple SVG Loading Spinner Component
 const LoadingSpinner = ({ className = "h-10 w-10" }) => (
-  <svg
-    className={`animate-spin text-white ${className}`}
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-  >
-    <circle
-      className="opacity-25"
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      strokeWidth="4"
-    ></circle>
-    <path
-      className="opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-    ></path>
-  </svg>
+    <svg
+        className={`animate-spin text-white ${className}`}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+        ></circle>
+        <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+    </svg>
 );
 
-// SVG Gauge Meter Component (you can hook this up where needed)
+// SVG Gauge Meter Component
 const GaugeMeter = ({ percentage, size = 140, strokeWidth = 16 }) => {
-  const validPercentage = Math.min(100, Math.max(0, percentage || 0));
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const arcLength = circumference * 0.75; // 270 degrees
-  const offset = arcLength * (1 - validPercentage / 100);
-  const center = size / 2;
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      className="transform -rotate-[135deg]"
-    >
-      <circle
-        cx={center}
-        cy={center}
-        r={radius}
-        fill="none"
-        stroke="rgba(255, 255, 255, 0.1)"
-        strokeWidth={strokeWidth}
-        strokeDasharray={`${arcLength} ${circumference - arcLength}`} 
-        strokeLinecap="round"
-      />
-      <circle
-        cx={center}
-        cy={center}
-        r={radius}
-        fill="none"
-        stroke="white"
-        strokeWidth={strokeWidth}
-        strokeDasharray={`${arcLength} ${circumference - arcLength}`}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        style={{ transition: 'stroke-dashoffset 0.5s ease-out' }}
-      />
-    </svg>
-  );
+    const validPercentage = Math.min(100, Math.max(0, percentage || 0));
+    const radius = (size - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+
+    const arcLength = circumference * 0.75; // 270 degrees
+    const offset = arcLength * (1 - validPercentage / 100);
+    const svgSize = size;
+    const center = svgSize / 2;
+
+    return (
+        <svg
+            width={svgSize}
+            height={svgSize}
+            viewBox={`0 0 ${svgSize} ${svgSize}`}
+            className="transform -rotate-[135deg]" // Rotates to start bottom-left, sweep clockwise up
+        >
+            <circle
+                cx={center}
+                cy={center}
+                r={radius}
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.1)"
+                strokeWidth={strokeWidth}
+                strokeDasharray={arcLength + " " + (circumference - arcLength)}
+                strokeLinecap="round"
+            />
+            <circle
+                cx={center}
+                cy={center}
+                r={radius}
+                fill="none"
+                stroke="white"
+                strokeWidth={strokeWidth}
+                strokeDasharray={arcLength + " " + (circumference - arcLength)}
+                strokeDashoffset={offset}
+                strokeLinecap="round"
+                style={{ transition: 'stroke-dashoffset 0.5s ease-out' }}
+            />
+        </svg>
+    );
 };
 
-// Main Screen Component (export default)
-export default function Screen() {
-  const [confidenceScore, setConfidenceScore] = useState(0);
-  const [animatedScore, setAnimatedScore] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchConfidenceScore = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('https://api.obscura.ai/confidence');
-      if (!response.ok) throw new Error(`API request failed: ${response.status}`);
-      const data = await response.json();
-      setConfidenceScore(
-        typeof data.score === 'number' && data.score >= 0 && data.score <= 100
-          ? data.score
-          : 98
-      );
-    } catch (error) {
-      console.error(error);
-      setConfidenceScore(98);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export const Screen = () => {
+    const [confidenceScore, setConfidenceScore] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!['image/png','image/jpeg'].includes(file.type)) {
-      alert('Please upload a PNG or JPG image file.');
-      return;
-    }
-    fetchConfidenceScore();
-  };
+    const fetchConfidenceScore = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('https://api.obscura.ai/confidence');
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+            const data = await response.json();
+            if (typeof data.score === 'number' && data.score >= 0 && data.score <= 100) {
+                setConfidenceScore(data.score);
+            } else {
+                console.warn("Received invalid score from API, using fallback.", data.score);
+                setConfidenceScore(98);
+            }
+        } catch (error) {
+            console.error("Error fetching confidence score:", error);
+            setConfidenceScore(98);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  useEffect(() => {
-    fetchConfidenceScore();
-  }, []);
+    useEffect(() => {
+        fetchConfidenceScore();
+    }, []);
 
-  useEffect(() => {
-    if (isLoading || confidenceScore === 0) {
-      setAnimatedScore(isLoading ? 0 : 0);
-      return;
-    }
-    let current = 0;
-    const target = confidenceScore;
-    const timer = setInterval(() => {
-      current++;
-      setAnimatedScore(current);
-      if (current >= target) clearInterval(timer);
-    }, 1000 / target);
-    return () => clearInterval(timer);
-  }, [isLoading, confidenceScore]);
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const fileType = file.type;
+            if (fileType === 'image/png' || fileType === 'image/jpeg') {
+                console.log("File uploaded:", file.name);
+                fetchConfidenceScore();
+            } else {
+                alert("Please upload a PNG or JPG image file.");
+            }
+        }
+    };
 
     const socialLinks = [
         { icon: "https://c.animaapp.com/KiVzG1Ou/img/image--mx-auto-.svg", alt: "Social media icon" },
@@ -291,37 +287,14 @@ export default function Screen() {
                             {/* Circle base track - Using placeholder for now */}
                             <div className="absolute w-[137px] h-[139px] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#333333]" />
 
-                            <div className="absolute w-[179px] h-[179px] -top-px -left-px flex items-center justify-center">
-                                <div className="relative w-[166px] h-[166px]">
-                                    {/* Circular progress indicator - Custom implementation */}
-                                    {!isLoading && (
-                                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                            <svg className="w-36 h-36 -rotate-90" viewBox="0 0 100 100">
-                                                <circle
-                                                    cx="50" cy="50" r="38"
-                                                    fill="none"
-                                                    stroke="#333333"
-                                                    strokeWidth="12"
-                                                />
-                                                <circle
-                                                    cx="50" cy="50" r="38"
-                                                    fill="none"
-                                                    stroke="white"
-                                                    strokeWidth="12"
-                                                    strokeDasharray="239.5"
-                                                    strokeDashoffset={(100 - confidenceScore) / 100 * 239.5}
-                                                    strokeLinecap="round"
-                                                />
-                                            </svg>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Percentage Text */}
-                            <div className="absolute font-headings-heading-1 font-[number:var(--headings-heading-1-font-weight)] text-white text-[length:var(--headings-heading-1-font-size)] text-center tracking-[var(--headings-heading-1-letter-spacing)] leading-[var(--headings-heading-1-line-height)] [font-style:var(--headings-heading-1-font-style)]">
-                                {isLoading ? <LoadingSpinner className="h-12 w-12" /> : `${confidenceScore}%`}
-                            </div>
+                                    <AnimatedGauge
+          percentage={confidenceScore}
+          // optional overrides:
+          sizeClass="w-40 h-40"
+          trackColorClass="stroke-neutral-700"
+          progressColorClass="stroke-green-400"
+          durationClass="duration-700"
+        />
                         </div>
                     </div>
 
@@ -346,8 +319,8 @@ export default function Screen() {
                             </div>
 
                             <Button
-                                variant="outline"
-                                className="!bg-transparent border border-white text-white
+  variant="outline"
+  className="!bg-transparent border border-white text-white
              inline-flex items-center justify-center gap-2
              pt-[var(--spacing-button-vertical-padding)]
              pr-[var(--spacing-button-horizontal-padding)]
@@ -356,13 +329,13 @@ export default function Screen() {
              rounded-[var(--spacing-button-corner-radius)]
              hover:bg-white/10 active:bg-white/20
              transition-colors"
-                                onClick={fetchConfidenceScore}
-                            >
-                                <span className="text-sm font-medium whitespace-nowrap">
-                                    Analyze
-                                </span>
-                                <ArrowRightIcon className="relative w-4 h-4" />
-                            </Button>
+  onClick={fetchConfidenceScore}
+>
+  <span className="text-sm font-medium whitespace-nowrap">
+    Analyze
+  </span>
+  <ArrowRightIcon className="relative w-4 h-4" />
+</Button>
 
                         </CardContent>
                     </Card>
